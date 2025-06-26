@@ -1,0 +1,29 @@
+{
+  "name": "Drawing",
+  "type": "object",
+  "properties": {
+    "reference_image_url": {
+      "type": "string",
+      "description": "URL of the original reference image"
+    },
+    "user_drawing_url": {
+      "type": "string",
+      "description": "URL of the user's drawing"
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Similarity score between reference and user drawing"
+    },
+    "drawing_time_seconds": {
+      "type": "number",
+      "description": "Time spent drawing in seconds"
+    },
+    "canvas_data": {
+      "type": "string",
+      "description": "JSON string of canvas drawing data for replay"
+    }
+  },
+  "required": ["reference_image_url"]
+}
