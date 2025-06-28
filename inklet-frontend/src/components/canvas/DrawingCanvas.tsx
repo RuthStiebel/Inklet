@@ -7,6 +7,7 @@ import React, {
   type MouseEvent,
   type TouchEvent,
 } from "react";
+import { Box, Paper, Typography } from "@mui/material";
 
 interface DrawingCanvasProps {
   currentTool: string;
@@ -30,15 +31,12 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
     useEffect(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;
-
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      // Set canvas size
       canvas.width = 800;
       canvas.height = 600;
 
-      // Set initial context properties
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.fillStyle = "#ffffff";
@@ -62,7 +60,6 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
     ) => {
       const rect = canvasRef.current!.getBoundingClientRect();
       let clientX, clientY;
-
       if ("touches" in e) {
         clientX = e.touches[0].clientX;
         clientY = e.touches[0].clientY;
@@ -70,7 +67,6 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
         clientX = e.clientX;
         clientY = e.clientY;
       }
-
       return {
         x: clientX - rect.left,
         y: clientY - rect.top,
@@ -82,7 +78,6 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
     ) => {
       if (!context) return;
       setIsDrawing(true);
-
       const { x, y } = getCoordinates(e);
       context.beginPath();
       context.moveTo(x, y);
@@ -92,7 +87,6 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
       e: MouseEvent<HTMLCanvasElement> | TouchEvent<HTMLCanvasElement>
     ) => {
       if (!isDrawing || !context) return;
-
       const { x, y } = getCoordinates(e);
       context.lineTo(x, y);
       context.stroke();
@@ -118,23 +112,44 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
     }));
 
     return (
-      <div className="flex flex-col items-center">
-        <canvas
-          ref={canvasRef}
-          className="border-2 border-stone-200 rounded-xl shadow-inner bg-white cursor-crosshair touch-none"
-          onMouseDown={startDrawing}
-          onMouseMove={draw}
-          onMouseUp={stopDrawing}
-          onMouseLeave={stopDrawing}
-          onTouchStart={startDrawing}
-          onTouchMove={draw}
-          onTouchEnd={stopDrawing}
-        />
-
-        <p className="text-stone-500 text-sm mt-4 text-center">
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <Paper
+          elevation={3}
+          sx={{
+            p: 2,
+            backgroundColor: "#fff",
+            borderRadius: 3,
+            width: 820, // canvas width + padding
+            height: 640, // canvas height + padding
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <canvas
+            ref={canvasRef}
+            width={800}
+            height={600}
+            style={{
+              border: "2px solid #e0e0e0",
+              borderRadius: 12,
+              backgroundColor: "#fff",
+              cursor: "crosshair",
+              display: "block",
+            }}
+            onMouseDown={startDrawing}
+            onMouseMove={draw}
+            onMouseUp={stopDrawing}
+            onMouseLeave={stopDrawing}
+            onTouchStart={startDrawing}
+            onTouchMove={draw}
+            onTouchEnd={stopDrawing}
+          />
+        </Paper>
+        <Typography variant="caption" color="text.secondary" mt={2}>
           Start drawing on the canvas above
-        </p>
-      </div>
+        </Typography>
+      </Box>
     );
   }
 );

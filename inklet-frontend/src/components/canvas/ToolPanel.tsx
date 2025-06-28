@@ -1,7 +1,5 @@
 import React from "react";
-import Button from "@mui/material/Button";
-import Slider from "@mui/material/Slider";
-import Divider from "@mui/material/Divider";
+import { Button, Slider, Divider, Box, Typography, Paper } from "@mui/material";
 import { Brush, Eraser, RotateCcw, Download, Palette } from "lucide-react";
 
 const BRUSH_COLORS = [
@@ -37,177 +35,127 @@ const ToolPanel: React.FC<ToolPanelProps> = ({
   onDownload,
 }) => {
   return (
-    <div
-      style={{
-        padding: "1.5rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1.5rem",
-      }}
-    >
-      {/* Tools */}
-      <div>
-        <h3
-          style={{
-            fontSize: "0.875rem",
-            fontWeight: 600,
-            color: "#1f2937",
-            marginBottom: "0.75rem",
-          }}
-        >
-          Tools
-        </h3>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "0.5rem",
-          }}
-        >
+    <Paper elevation={1} sx={{ p: 3, borderRadius: 2, height: "100%" }}>
+      <Box display="flex" flexDirection="column" gap={3}>
+        {/* Tools */}
+        <Box>
+          <Typography variant="subtitle2" fontWeight="bold" mb={1}>
+            Tools
+          </Typography>
+          <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap={1}>
+            <Button
+              variant={currentTool === "brush" ? "contained" : "outlined"}
+              size="small"
+              onClick={() => setCurrentTool("brush")}
+              startIcon={<Brush size={16} />}
+              sx={{ textTransform: "none", gap: 1 }}
+            >
+              Brush
+            </Button>
+            <Button
+              variant={currentTool === "eraser" ? "contained" : "outlined"}
+              size="small"
+              onClick={() => setCurrentTool("eraser")}
+              startIcon={<Eraser size={16} />}
+              sx={{ textTransform: "none", gap: 1 }}
+            >
+              Eraser
+            </Button>
+          </Box>
+        </Box>
+
+        <Divider />
+
+        {/* Brush Size */}
+        <Box>
+          <Typography variant="subtitle2" fontWeight="bold" mb={1}>
+            Size: {brushSize}px
+          </Typography>
+          <Slider
+            value={brushSize}
+            onChange={(_, value) => setBrushSize(value as number)}
+            min={1}
+            max={50}
+            step={1}
+          />
+        </Box>
+
+        <Divider />
+
+        {/* Colors */}
+        {currentTool === "brush" && (
+          <Box>
+            <Typography
+              variant="subtitle2"
+              fontWeight="bold"
+              mb={1}
+              display="flex"
+              alignItems="center"
+              gap={1}
+            >
+              <Palette size={16} />
+              Colors
+            </Typography>
+            <Box display="grid" gridTemplateColumns="repeat(4, 1fr)" gap={1}>
+              {BRUSH_COLORS.map((color) => (
+                <Button
+                  key={color}
+                  onClick={() => setBrushColor(color)}
+                  sx={{
+                    minWidth: 0,
+                    minHeight: 0,
+                    width: 32,
+                    height: 32,
+                    borderRadius: 1,
+                    border: `2px solid ${
+                      brushColor === color ? "#a8a29e" : "rgba(0,0,0,0.1)"
+                    }`,
+                    transition: "all 0.2s",
+                    transform: brushColor === color ? "scale(1.1)" : "scale(1)",
+                    backgroundColor: color,
+                    "&:hover": {
+                      backgroundColor: color,
+                      opacity: 0.9,
+                    },
+                  }}
+                />
+              ))}
+            </Box>
+          </Box>
+        )}
+
+        <Divider />
+
+        {/* Actions */}
+        <Box display="flex" flexDirection="column" gap={1}>
           <Button
-            variant={currentTool === "brush" ? "contained" : "outlined"}
+            variant="outlined"
             size="small"
-            onClick={() => setCurrentTool("brush")}
-            startIcon={<Brush size={16} />}
-            sx={{
-              textTransform: "none",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-            }}
+            onClick={onClear}
+            startIcon={<RotateCcw size={16} />}
+            sx={{ textTransform: "none", gap: 1 }}
           >
-            Brush
+            Clear Canvas
           </Button>
           <Button
-            variant={currentTool === "eraser" ? "contained" : "outlined"}
+            variant="contained"
             size="small"
-            onClick={() => setCurrentTool("eraser")}
-            startIcon={<Eraser size={16} />}
+            onClick={onDownload}
+            startIcon={<Download size={16} />}
             sx={{
               textTransform: "none",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
+              gap: 1,
+              background: "linear-gradient(to right, #10b981, #0d9488)",
+              "&:hover": {
+                background: "linear-gradient(to right, #059669, #0d9488)",
+              },
             }}
           >
-            Eraser
+            Download Drawing
           </Button>
-        </div>
-      </div>
-
-      <Divider sx={{ my: 1 }} />
-
-      {/* Brush Size */}
-      <div>
-        <h3
-          style={{
-            fontSize: "0.875rem",
-            fontWeight: 600,
-            color: "#1f2937",
-            marginBottom: "0.75rem",
-          }}
-        >
-          Size: {brushSize}px
-        </h3>
-        <Slider
-          value={brushSize}
-          onChange={(_, value) => setBrushSize(value as number)}
-          min={1}
-          max={50}
-          step={1}
-          sx={{ width: "100%" }}
-        />
-      </div>
-
-      <Divider sx={{ my: 1 }} />
-
-      {/* Colors */}
-      {currentTool === "brush" && (
-        <div>
-          <h3
-            style={{
-              fontSize: "0.875rem",
-              fontWeight: 600,
-              color: "#1f2937",
-              marginBottom: "0.75rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-            }}
-          >
-            <Palette size={16} />
-            Colors
-          </h3>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: "0.5rem",
-            }}
-          >
-            {BRUSH_COLORS.map((color) => (
-              <button
-                key={color}
-                onClick={() => setBrushColor(color)}
-                style={{
-                  width: "2rem",
-                  height: "2rem",
-                  borderRadius: "0.5rem",
-                  border: `2px solid ${
-                    brushColor === color ? "#a8a29e" : "#e5e7eb"
-                  }`,
-                  transition: "all 0.2s",
-                  transform: brushColor === color ? "scale(1.1)" : "scale(1)",
-                  backgroundColor: color,
-                  cursor: "pointer",
-                }}
-                aria-label={`Select color ${color}`}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      <Divider sx={{ my: 1 }} />
-
-      {/* Actions */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={onClear}
-          startIcon={<RotateCcw size={16} />}
-          sx={{
-            textTransform: "none",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            width: "100%",
-          }}
-        >
-          Clear Canvas
-        </Button>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={onDownload}
-          startIcon={<Download size={16} />}
-          sx={{
-            textTransform: "none",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            width: "100%",
-            background: "linear-gradient(to right, #10b981, #0d9488)",
-            "&:hover": {
-              background: "linear-gradient(to right, #059669, #0d9488)",
-            },
-          }}
-        >
-          Download Drawing
-        </Button>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Paper>
   );
 };
 
