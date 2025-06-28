@@ -4,17 +4,35 @@ import React, {
   useState,
   forwardRef,
   useImperativeHandle,
+  type MouseEvent,
+  type TouchEvent,
 } from "react";
 
-const DrawingCanvas = forwardRef(
+interface DrawingCanvasProps {
+  currentTool: string;
+  brushSize: number;
+  brushColor: string;
+}
+
+export interface DrawingCanvasRef {
+  clearCanvas: () => void;
+  getCanvas: () => HTMLCanvasElement | null;
+}
+
+const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
   ({ currentTool, brushSize, brushColor }, ref) => {
-    const canvasRef = useRef(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
-    const [context, setContext] = useState(null);
+    const [context, setContext] = useState<CanvasRenderingContext2D | null>(
+      null
+    );
 
     useEffect(() => {
       const canvas = canvasRef.current;
+      if (!canvas) return;
+
       const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
       // Set canvas size
       canvas.width = 800;
@@ -39,26 +57,43 @@ const DrawingCanvas = forwardRef(
       }
     }, [currentTool, brushSize, brushColor, context]);
 
-    const startDrawing = (e) => {
-      if (!context) return;
+    const getCoordinates = (
+      e: MouseEvent<HTMLCanvasElement> | TouchEvent<HTMLCanvasElement>
+    ) => {
+      const rect = canvasRef.current!.getBoundingClientRect();
+      let clientX, clientY;
 
+      if ("touches" in e) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top,
+      };
+    };
+
+    const startDrawing = (
+      e: MouseEvent<HTMLCanvasElement> | TouchEvent<HTMLCanvasElement>
+    ) => {
+      if (!context) return;
       setIsDrawing(true);
 
-      const rect = canvasRef.current.getBoundingClientRect();
-      const x = (e.clientX || e.touches[0].clientX) - rect.left;
-      const y = (e.clientY || e.touches[0].clientY) - rect.top;
-
+      const { x, y } = getCoordinates(e);
       context.beginPath();
       context.moveTo(x, y);
     };
 
-    const draw = (e) => {
+    const draw = (
+      e: MouseEvent<HTMLCanvasElement> | TouchEvent<HTMLCanvasElement>
+    ) => {
       if (!isDrawing || !context) return;
 
-      const rect = canvasRef.current.getBoundingClientRect();
-      const x = (e.clientX || e.touches[0].clientX) - rect.left;
-      const y = (e.clientY || e.touches[0].clientY) - rect.top;
-
+      const { x, y } = getCoordinates(e);
       context.lineTo(x, y);
       context.stroke();
     };
@@ -69,7 +104,7 @@ const DrawingCanvas = forwardRef(
 
     useImperativeHandle(ref, () => ({
       clearCanvas: () => {
-        if (context) {
+        if (context && canvasRef.current) {
           context.fillStyle = "#ffffff";
           context.fillRect(
             0,

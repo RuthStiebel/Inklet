@@ -1,22 +1,22 @@
 import React, { useState, useRef } from "react";
-import DrawingCanvas from "../components/canvas/DrawingCanvas";
+import DrawingCanvas, {
+  type DrawingCanvasRef,
+} from "../components/canvas/DrawingCanvas";
 import ToolPanel from "../components/canvas/ToolPanel";
 
 export default function Canvas() {
-  const [currentTool, setCurrentTool] = useState("brush");
-  const [brushSize, setBrushSize] = useState(5);
-  const [brushColor, setBrushColor] = useState("#2d3748");
-  const canvasRef = useRef(null);
+  const [currentTool, setCurrentTool] = useState<string>("brush");
+  const [brushSize, setBrushSize] = useState<number>(5);
+  const [brushColor, setBrushColor] = useState<string>("#2d3748");
+  const canvasRef = useRef<DrawingCanvasRef>(null);
 
   const clearCanvas = () => {
-    if (canvasRef.current) {
-      canvasRef.current.clearCanvas();
-    }
+    canvasRef.current?.clearCanvas();
   };
 
   const downloadDrawing = () => {
-    if (canvasRef.current) {
-      const canvas = canvasRef.current.getCanvas();
+    const canvas = canvasRef.current?.getCanvas();
+    if (canvas) {
       const link = document.createElement("a");
       link.download = `drawing-${new Date().toISOString().slice(0, 10)}.png`;
       link.href = canvas.toDataURL();
