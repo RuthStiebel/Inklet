@@ -1,4 +1,4 @@
-import React, { type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Box, Container, Typography, Paper } from "@mui/material";
 
 interface LayoutProps {
@@ -6,7 +6,7 @@ interface LayoutProps {
   currentPageName: string;
 }
 
-export default function Layout({ children, currentPageName }: LayoutProps) {
+export default function Layout({ children }: LayoutProps) {
   return (
     <Box minHeight="100vh" bgcolor="background.default">
       {/* Header */}

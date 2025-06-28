@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { Box, Container } from "@mui/material";
+import { useState, useRef } from "react";
+import { Box } from "@mui/material";
 import DrawingCanvas, {
   type DrawingCanvasRef,
 } from "./components/canvas/DrawingCanvas";
